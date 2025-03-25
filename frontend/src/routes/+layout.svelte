@@ -13,7 +13,7 @@
 
         if (response.ok) {
             const data = await response.json();
-            user.set(data.username); // setting username in a store
+            user.set(data.username); // setting username in the store
         } else {
             user.set(null); // clearing the store
             goto('/login');
@@ -35,6 +35,12 @@
         </li>
         <li>
             <a href="/records">Your records</a>
+        </li>
+        <li>
+            <a href="/add-text">Add your text</a>
+        </li>
+        <li>
+            <a href="/text-list">List of your texts</a>
         </li>
         <p>
             {#if $user}
