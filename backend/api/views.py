@@ -52,6 +52,15 @@ class TextListView(APIView):
         texts = Text.objects.all()
         return Response({'texts': [text.content for text in texts]}, status=status.HTTP_200_OK)
     
+#returning a random text
+class RandomTextView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        text = Text.objects.order_by('?').first()
+        if text is None:
+            return Response({'error': 'No texts available'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'content': text.content}, status=status.HTTP_200_OK)    
 #adding a text
 class AddTextView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -66,12 +75,15 @@ class AddTextView(APIView):
 class DeleteTextView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request):
+    def delete(self, request):
         content = request.data.get('content')
-        text = Text.objects.get(content=content)
-        text.delete()
-        return Response({'content': text.content}, status=status.HTTP_200_OK)
-
+        try:
+            text = Text.objects.get(content=content)
+            text.delete()
+            return Response({'message': 'Text deleted successfully'}, status=status.HTTP_200_OK)
+        except Text.DoesNotExist:
+            return Response({'error': 'Text not found'}, status=status.HTTP_404_NOT_FOUND)
+        
 #updating a text
 class UpdateTextView(APIView):
     permission_classes = (IsAuthenticated,)
