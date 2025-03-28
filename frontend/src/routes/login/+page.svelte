@@ -19,23 +19,75 @@
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
             user.set(username); // setting the user in the store
-            //goto('/'); 
+            goto('/'); 
         } else {
             alert('Login failed. Please check your credentials.');
         }
     }
 </script>
 
-<h1>Login</h1>
+
 
 <form on:submit|preventDefault={login}>
-    <label>
-        Username:
+    <h1>Login</h1>
+    <div class="field">
+        <label for="username">
+            Username:
+        </label>
         <input type="text" bind:value={username} placeholder="Enter your username" />
-    </label>
-    <label>
-        Password:
+    </div>
+    <div class="field">
+        <label for="password">
+            Password:
+        </label>
         <input type="password" bind:value={password} placeholder="Enter your password" />
-    </label>
+    </div>
     <button type="submit">Login</button>
 </form>
+
+<style>
+
+    h1 {
+        text-align: center;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 600px;
+        border: 3px solid #f1f1f1;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 2rem;
+        align-items: center;
+        
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    label {
+        padding: 5px;
+    }
+
+    input {
+        height: 2rem;
+        padding: 6px;
+        margin-bottom: 2rem;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 16px;
+        cursor: pointer;
+        width: 30%;
+    }
+</style>

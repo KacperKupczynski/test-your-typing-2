@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { user } from '../stores/user';
+    import "../app.css";
 
 
     onMount(async () => {
@@ -31,6 +32,11 @@
 <nav>
     <ul>
         <li>
+            <a href="/">
+                <img src="./logo.png" alt="logo">
+            </a>
+        </li>
+        <li>
             <a href="/type-test">Start typing</a>
         </li>
         <li>
@@ -42,18 +48,59 @@
         <li>
             <a href="/text-list">List of your texts</a>
         </li>
-        <p>
-            {#if $user}
-                <p>Welcome, {$user}!</p>
-                <button on:click={logout}>Logout</button>
-            {:else}
-                <a href="/login">Login</a>
-                <a href="/register">Register</a>
-            {/if}
-        </p>
     </ul>
+    <div class="user-info">
+        {#if $user}
+            <p>{$user}</p>
+            <button on:click={logout}>Logout</button>
+        {:else}
+            <a href="/login">Login</a>
+        {/if}
+    </div>
 </nav>
 
 <main>
     <slot></slot>
 </main>
+
+<style>
+    nav {
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        width: 100vw;
+        padding: 1rem;
+        height: 3rem;
+        background-color: #333;
+        color: white;
+    }
+
+    nav ul {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        list-style: none;
+    }
+
+    nav ul li {
+        margin-right: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    nav p {
+        margin-left: 10rem;;
+        padding: 2rem;
+    }
+    a {
+        color: white;
+        text-decoration: none;
+    }
+    
+    main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 4rem);
+    }
+</style>
