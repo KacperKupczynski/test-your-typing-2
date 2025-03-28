@@ -34,7 +34,7 @@
         <label for="username">
             Username:
         </label>
-        <input type="text" bind:value={username} placeholder="Enter your username" />
+        <input name="username" type="text" bind:value={username} placeholder="Enter your username" />
     </div>
     <div class="field">
         <label for="password">
@@ -43,7 +43,11 @@
         <input type="password" bind:value={password} placeholder="Enter your password" />
     </div>
     <button type="submit">Login</button>
+    <p>
+        Don't have an account? <a href="/register">Register here</a>
+    </p>
 </form>
+
 
 <style>
 
@@ -62,6 +66,13 @@
         
     }
 
+    a {
+        color: #4CAF50;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
     .field {
         display: flex;
         flex-direction: column;

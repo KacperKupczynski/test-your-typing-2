@@ -30,12 +30,10 @@
 </script>
 
 <nav>
+    <a href="/">
+        <img src="./logo.png" alt="logo" class="logo" />
+    </a>
     <ul>
-        <li>
-            <a href="/">
-                <img src="./logo.png" alt="logo">
-            </a>
-        </li>
         <li>
             <a href="/type-test">Start typing</a>
         </li>
@@ -68,7 +66,6 @@
         display: flex;
         align-items: center;
         justify-content: right;
-        width: 100vw;
         padding: 1rem;
         height: 3rem;
         background-color: #333;
@@ -78,14 +75,23 @@
     nav ul {
         display: flex;
         width: 100%;
-        justify-content: space-between;
         list-style: none;
     }
 
     nav ul li {
-        margin-right: 1rem;
+        padding: 1rem;
         display: flex;
         align-items: center;
+    }
+
+    nav ul li a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo {
+        margin-top: 12px;
     }
 
     nav p {
@@ -95,6 +101,21 @@
     a {
         color: white;
         text-decoration: none;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
     }
     
     main {

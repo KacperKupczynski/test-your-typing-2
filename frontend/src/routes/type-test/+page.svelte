@@ -46,7 +46,6 @@
         });
     }
 
-
     function start() {
         isStarted = true;
         interval = setInterval(() => {
@@ -62,15 +61,7 @@
     }
 
     function checkCorrectness() {
-        let correct = false;
-        letterStates.forEach(letterState => {
-            if (letterState.state === 'correct') {
-                correct = true;
-            } else {
-                correct = false;
-            }
-        });
-        return correct;
+        return letterStates.every(letterState => letterState.state === 'correct');
     }
 
     function stop() {
@@ -82,8 +73,6 @@
             alert('You made a mistake!');
         }
     }
-
-    
 
 </script>
 
@@ -98,8 +87,6 @@
     <p>{time.toFixed(2)}</p>
     <p>{wpm.toFixed(2)}</p>
 </div>
-
-
 
 <style>
     .test {
