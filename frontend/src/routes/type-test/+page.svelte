@@ -1,7 +1,6 @@
 <script lang="ts">
-
     import { onMount } from "svelte";
-    
+
     let text = "";
     let letterStates: { letter: string; state: string }[] = [];
     let input = '';
@@ -20,7 +19,10 @@
         if (response.ok) {
             const data = await response.json();
             text = data.content;
-            letterStates = text.split('').map(letter => ({ letter, state: 'not-typed' }));
+            letterStates = text.split('').map(letter => ({
+                letter,
+                state: 'not-typed'
+            }));
         } else {
             alert('Failed to get text');
         }
@@ -29,7 +31,7 @@
     $: if (input.length == 1 && !isStarted) {
         start();
     }
-    
+
     $: if (input.length === text.length && isStarted) {
         stop();
     }
@@ -73,19 +75,23 @@
             alert('You made a mistake!');
         }
     }
-
 </script>
 
-<h1>Typing test</h1>
 <div class="test">
     <div class="displayer">
         {#each letterStates as { letter, state }, i}
-            <span class={state}>{letter}</span>
+            {#if letter === ' '}
+                <span class="space"></span>
+            {:else}
+                <span class={state}>{letter}</span>
+            {/if}
         {/each}
     </div>
-    <input type="text" name="" id="" bind:value={input} on:input={checkInput} />
-    <p>{time.toFixed(2)}</p>
-    <p>{wpm.toFixed(2)}</p>
+    <div class="type-box">
+        <input type="text" name="" id="" bind:value={input} on:input={checkInput} placeholder="Type text above"/>
+        <p>WPM: {wpm.toFixed(2)}</p>
+        <p>Time: {time.toFixed(2)}</p>
+    </div>
 </div>
 
 <style>
@@ -93,8 +99,20 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        gap: 1rem;
     }
-
+    input {
+        width: 300px;
+        padding: 8px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+    }
+    .type-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
     .displayer {
         display: flex;
         flex-wrap: wrap;
@@ -109,6 +127,10 @@
     }
 
     .not-typed {
-        color: black;
+        color: rgb(212, 212, 212);
+    }
+
+    .space {
+        width: 0.5rem;
     }
 </style>
