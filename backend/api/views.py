@@ -96,6 +96,30 @@ class UpdateTextView(APIView):
         text.save()
         return Response({'content': text.content}, status=status.HTTP_200_OK)
     
+class SaveResultView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        text_content = request.data.get('text')
+        wpm = request.data.get('wpm')
+        user = request.user.username
+
+        try:
+            text = Text.objects.get(content=text_content)
+            result = WpmResult(text=text, wpm=wpm, accuracy=accuracy, user=user)
+            result.save()
+            return Response({'message': 'Result saved successfully'}, status=status.HTTP_201_CREATED)
+        except Text.DoesNotExist:
+            return Response({'error': 'Text not found'}, status=status.HTTP_404_NOT_FOUND)
+class GetResultView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user = request.user.username
+        results = WpmResult.objects.filter(user=user).order_by('-created_at')
+        serialized_results = [{'text': result.text.content, 'wpm': result.wpm, 'accuracy': result.accuracy} for result in results]
+        return Response({'results': serialized_results}, status=status.HTTP_200_OK)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user(request):

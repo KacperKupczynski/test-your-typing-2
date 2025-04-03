@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
+	import { user } from "../../stores/user";
 
     let text = "";
     let letterStates: { letter: string; state: string }[] = [];
@@ -65,14 +66,45 @@
     function checkCorrectness() {
         return letterStates.every(letterState => letterState.state === 'correct');
     }
+    function reset() {
+        input = '';
+        letterStates = text.split('').map(letter => ({
+            letter,
+            state: 'not-typed'
+        }));
+        time = 0;
+        wpm = 0;
+        isStarted = false;
+        clearInterval(interval);
+        interval = 0;
+    }
 
-    function stop() {
+    async function stop() {
         clearInterval(interval);
         isStarted = false;
         if (checkCorrectness()) {
             alert('You typed the text correctly!');
+            const response = await fetch('http://localhost:8000/api/saveResult/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('access_token')}`
+                },
+                body: JSON.stringify({
+                    wpm,
+                    time,
+                })
+            });
+            
+            if (response.ok) {
+                alert('Result saved successfully');
+                reset();
+            } else {
+                alert('Failed to save result');
+            }
         } else {
-            alert('You made a mistake!');
+            alert('You made a mistake. You need to type the text correctly.');
+            reset();
         }
     }
 </script>
