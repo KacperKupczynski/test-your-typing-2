@@ -12,7 +12,7 @@ class WpmResult(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"WPM: {self.wpm}, Accuracy: {self.accuracy}, Text: {self.text.content[:20]}..."
+        return f"WPM: {self.wpm}, Text: {self.text.content[:20]}..."
     # additional definitions for the WpmResult model can be added here
     class Meta:
         ordering = ['-created_at']

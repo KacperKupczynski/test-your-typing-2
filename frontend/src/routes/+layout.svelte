@@ -4,6 +4,7 @@
     import { user } from '../stores/user';
     import "../app.css";
 
+    let loading = true;
 
     onMount(async () => {
         const response = await fetch('http://localhost:8000/api/getUser/', {
@@ -19,6 +20,7 @@
             user.set(null); // clearing the store
             goto('/login');
         }
+        loading = false;
     });
 
     function logout() {
@@ -29,6 +31,11 @@
     }
 </script>
 
+{#if loading}
+    <div class="loading">Loading...</div>
+{:else}
+
+
 <nav>
     <a href="/">
         <img src="./logo.png" alt="logo" class="logo" />
@@ -38,7 +45,7 @@
             <a href="/type-test">Start typing</a>
         </li>
         <li>
-            <a href="/records">Your records</a>
+            <a href="/history">History</a>
         </li>
         <li>
             <a href="/add-text">Add your text</a>
@@ -61,6 +68,7 @@
     <slot></slot>
 </main>
 
+{/if}
 <style>
     nav {
         display: flex;

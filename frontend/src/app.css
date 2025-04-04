@@ -8,3 +8,14 @@ body {
     background: rgb(41,47,44);
     background: linear-gradient(90deg, rgba(41,47,44,1) 0%, rgba(64,64,64,1) 100%); 
 }
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    width: 30%;
+}

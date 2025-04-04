@@ -9,8 +9,16 @@
     let interval = 0;
     let isStarted = false;
     let wpm = 0;
+    let message = "";
+    let finalWpm = 0;
+    let finalTime = 0;
+    let showResults = false;
 
     onMount(async () => {
+        fetchText();
+    });
+
+    async function fetchText() {
         const response = await fetch('http://localhost:8000/api/randomText', {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('access_token')}`
@@ -27,7 +35,7 @@
         } else {
             alert('Failed to get text');
         }
-    });
+    }
 
     $: if (input.length == 1 && !isStarted) {
         start();
@@ -67,6 +75,7 @@
         return letterStates.every(letterState => letterState.state === 'correct');
     }
     function reset() {
+        fetchText();
         input = '';
         letterStates = text.split('').map(letter => ({
             letter,
@@ -83,7 +92,6 @@
         clearInterval(interval);
         isStarted = false;
         if (checkCorrectness()) {
-            alert('You typed the text correctly!');
             const response = await fetch('http://localhost:8000/api/saveResult/', {
                 method: 'POST',
                 headers: {
@@ -91,21 +99,24 @@
                     Authorization: `Bearer ${localStorage.getItem('access_token')}`
                 },
                 body: JSON.stringify({
-                    wpm,
-                    time,
+                    text,
+                    wpm
                 })
             });
             
             if (response.ok) {
-                alert('Result saved successfully');
-                reset();
+                showResults = true;
             } else {
-                alert('Failed to save result');
+                message = "Failed to save result.";
             }
         } else {
-            alert('You made a mistake. You need to type the text correctly.');
             reset();
+            message = "Test failed. Please try again.";
         }
+    }
+    function playAgain() {
+        showResults = false;
+        reset();
     }
 </script>
 
@@ -120,18 +131,36 @@
         {/each}
     </div>
     <div class="type-box">
-        <input type="text" name="" id="" bind:value={input} on:input={checkInput} placeholder="Type text above"/>
+        <input type="text" name="" id="" bind:value={input} oninput={checkInput} placeholder="Type text above"/>
+        {#if message}
+            <p class="incorrect error">{message}</p>
+        {/if}
         <p>WPM: {wpm.toFixed(2)}</p>
         <p>Time: {time.toFixed(2)}</p>
     </div>
+
+
+    {#if showResults}
+        <div class="results">
+            <h2>Results</h2>
+            <p>WPM: {wpm.toFixed(2)}</p>
+            <p>Time: {time.toFixed(2)} seconds</p>
+            <button onclick={playAgain}>Play again</button>
+            albo spacja powinno byc
+        </div>
+    {/if}
 </div>
 
 <style>
+
     .test {
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         gap: 1rem;
+        width: 100%;
+        height: 100%;
     }
     input {
         width: 300px;
@@ -139,6 +168,18 @@
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.05);
         color: white;
+    }
+    .results {
+        position: absolute;
+        border: 2px solid white;
+        border-radius: 16px;
+        width: 600px;
+        height: 400px;
+        background: rgba(0,0,0, 0.8);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
     .type-box {
         display: flex;

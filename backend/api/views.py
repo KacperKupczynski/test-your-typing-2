@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from .models import Text
+from .models import Text, WpmResult
 
 class RegisterView(APIView):
     permission_classes = (AllowAny,)
@@ -106,7 +106,7 @@ class SaveResultView(APIView):
 
         try:
             text = Text.objects.get(content=text_content)
-            result = WpmResult(text=text, wpm=wpm, accuracy=accuracy, user=user)
+            result = WpmResult(text=text, wpm=wpm, user=user)
             result.save()
             return Response({'message': 'Result saved successfully'}, status=status.HTTP_201_CREATED)
         except Text.DoesNotExist:
@@ -117,7 +117,7 @@ class GetResultView(APIView):
     def get(self, request):
         user = request.user.username
         results = WpmResult.objects.filter(user=user).order_by('-created_at')
-        serialized_results = [{'text': result.text.content, 'wpm': result.wpm, 'accuracy': result.accuracy} for result in results]
+        serialized_results = [{'text': result.text.content, 'wpm': result.wpm} for result in results]
         return Response({'results': serialized_results}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
