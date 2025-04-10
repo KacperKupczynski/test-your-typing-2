@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from api.views import RegisterView, LoginView, get_user, TextListView, AddTextView, DeleteTextView, UpdateTextView, RandomTextView, SaveResultView, GetResultView
+from api.views import RegisterView, LoginView, get_user, TextListView, AddTextView, DeleteTextView, UpdateTextView, RandomTextView, SaveResultView, GetResultsView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,5 +29,5 @@ urlpatterns = [
     path('api/deleteText/', DeleteTextView.as_view(), name='delete_text'),
     path('api/updateText/', UpdateTextView.as_view(), name='update_text'),
     path('api/saveResult/', SaveResultView.as_view(), name='save_result'),
-    path('api/getResult/', GetResultView.as_view(), name='get_result'),
+    path('api/getResults/', GetResultsView.as_view(), name='get_result'),
 ]

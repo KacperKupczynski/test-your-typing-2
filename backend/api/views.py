@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from .models import Text, WpmResult
 
+
 class RegisterView(APIView):
     permission_classes = (AllowAny,)
 
@@ -46,6 +47,7 @@ class LoginView(APIView):
 
 #returning all texts
 class TextListView(APIView):
+    #requires authentication
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -60,7 +62,8 @@ class RandomTextView(APIView):
         text = Text.objects.order_by('?').first()
         if text is None:
             return Response({'error': 'No texts available'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'content': text.content}, status=status.HTTP_200_OK)    
+        return Response({'content': text.content}, status=status.HTTP_200_OK)
+    
 #adding a text
 class AddTextView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -96,28 +99,32 @@ class UpdateTextView(APIView):
         text.save()
         return Response({'content': text.content}, status=status.HTTP_200_OK)
     
+#saving result of a test
 class SaveResultView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         text_content = request.data.get('text')
         wpm = request.data.get('wpm')
+        time = request.data.get('time')
         user = request.user.username
 
         try:
             text = Text.objects.get(content=text_content)
-            result = WpmResult(text=text, wpm=wpm, user=user)
+            result = WpmResult(text=text, wpm=wpm, time=time, user=user)
             result.save()
             return Response({'message': 'Result saved successfully'}, status=status.HTTP_201_CREATED)
         except Text.DoesNotExist:
             return Response({'error': 'Text not found'}, status=status.HTTP_404_NOT_FOUND)
-class GetResultView(APIView):
+        
+#retrieving results of a test
+class GetResultsView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         user = request.user.username
         results = WpmResult.objects.filter(user=user).order_by('-created_at')
-        serialized_results = [{'text': result.text.content, 'wpm': result.wpm} for result in results]
+        serialized_results = [{'text': result.text.content, 'wpm': result.wpm, 'time': result.time, 'created_at': result.created_at} for result in results]
         return Response({'results': serialized_results}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])

@@ -100,7 +100,8 @@
                 },
                 body: JSON.stringify({
                     text,
-                    wpm
+                    wpm,
+                    time
                 })
             });
             
@@ -154,6 +155,7 @@
 <style>
 
     .test {
+        font-size: 18px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -164,6 +166,8 @@
     }
     input {
         width: 300px;
+        height: 32px;
+        font-size: 18px;
         padding: 8px;
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.05);

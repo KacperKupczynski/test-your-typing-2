@@ -8,6 +8,7 @@ class Text(models.Model):
 class WpmResult(models.Model):
     text = models.ForeignKey(Text, on_delete=models.CASCADE)
     wpm = models.IntegerField()
+    time = models.FloatField()
     user = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
