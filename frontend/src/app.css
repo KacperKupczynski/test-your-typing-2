@@ -12,10 +12,29 @@ body {
 button {
     background-color: #4CAF50;
     color: white;
+    font-size: 16px;
     padding: 14px 20px;
     margin: 8px 0;
     border: none;
     border-radius: 16px;
     cursor: pointer;
-    width: 30%;
+    min-width: 64px;
 }
+
+button:hover {
+    background-color: #45a049;
+}
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Didact+Gothic&family=Inter:wght@600&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+.roboto-mono {
+    font-family: "Roboto Mono", monospace;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+  }

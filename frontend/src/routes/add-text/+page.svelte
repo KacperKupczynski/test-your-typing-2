@@ -2,6 +2,8 @@
     let content = '';
     let message = '';
 
+    // Function to add text to the database
+    // This function is called when the form is submitted
     async function addText() {
         const response = await fetch('http://localhost:8000/api/addText/', {
             method: 'POST',

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
 	import { user } from "../../stores/user";
+    import { fade } from "svelte/transition";
 
     let text = "";
     let letterStates: { letter: string; state: string }[] = [];
@@ -18,6 +19,17 @@
         fetchText();
     });
 
+
+    // Enter key event listener for play again button
+    // This will allow the user to press enter to play again after the test is finished
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && showResults) {
+            playAgain();
+        }
+    });
+
+    // Function to fetch random text from the API
+    // This function is called on mounting site (component)
     async function fetchText() {
         const response = await fetch('http://localhost:8000/api/randomText', {
             headers: {
@@ -33,18 +45,21 @@
                 state: 'not-typed'
             }));
         } else {
-            alert('Failed to get text');
+            message = "Failed to fetch text.";
         }
     }
 
+    //start test when user starts typing
     $: if (input.length == 1 && !isStarted) {
         start();
     }
 
+    //ends test when user types all letters
     $: if (input.length === text.length && isStarted) {
         stop();
     }
 
+    // Function to check the input against the text
     function checkInput() {
         letterStates = letterStates.map((letterState, i) => {
             if (input[i] === letterState.letter) {
@@ -57,6 +72,7 @@
         });
     }
 
+    // Function to start the timer and calculate WPM
     function start() {
         isStarted = true;
         interval = setInterval(() => {
@@ -65,15 +81,21 @@
         }, 10);
     }
 
+    // Function to calculate WPM based on the input and time
+    // WPM is calculated as (number of characters / 5) / (time in minutes)
     function calcWPM() {
         const chars = input.length;
         const words = chars / 5;
         wpm = words / (time / 60);
     }
 
+    // Function to check if the test is correct
     function checkCorrectness() {
         return letterStates.every(letterState => letterState.state === 'correct');
     }
+
+    // Function to reset the test
+    // This function is called when the user clicks the play again button
     function reset() {
         fetchText();
         input = '';
@@ -88,6 +110,7 @@
         interval = 0;
     }
 
+    // Function to stop the test and save the result
     async function stop() {
         clearInterval(interval);
         isStarted = false;
@@ -122,7 +145,8 @@
 </script>
 
 <div class="test">
-    <div class="displayer">
+{#if !showResults}
+    <div class="displayer roboto-mono">
         {#each letterStates as { letter, state }, i}
             {#if letter === ' '}
                 <span class="space"></span>
@@ -132,24 +156,31 @@
         {/each}
     </div>
     <div class="type-box">
-        <input type="text" name="" id="" bind:value={input} oninput={checkInput} placeholder="Type text above"/>
+        <input type="text" name="" id="" bind:value={input} oninput={checkInput} placeholder="Type text above" autofocus/>
         {#if message}
             <p class="incorrect error">{message}</p>
         {/if}
         <p>WPM: {wpm.toFixed(2)}</p>
         <p>Time: {time.toFixed(2)}</p>
     </div>
-
+{/if}
 
     {#if showResults}
-        <div class="results">
+        <div class="results" transition:fade={{ duration: 300 }}>
             <h2>Results</h2>
             <p>WPM: {wpm.toFixed(2)}</p>
             <p>Time: {time.toFixed(2)} seconds</p>
             <button onclick={playAgain}>Play again</button>
-            albo spacja powinno byc
         </div>
     {/if}
+
+    {#if !showResults && input.length > 0}
+        <button onclick={stop}>Stop</button>
+    {/if}
+    {#if !isStarted && input.length === 0}
+        <button onclick={fetchText}>Get new text</button>
+    {/if}
+
 </div>
 
 <style>
@@ -193,6 +224,7 @@
     .displayer {
         display: flex;
         flex-wrap: wrap;
+        max-width: 80vw;
     }
 
     .correct {

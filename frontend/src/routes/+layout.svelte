@@ -76,8 +76,9 @@
         justify-content: right;
         padding: 1rem;
         height: 3rem;
-        background-color: #333;
         color: white;
+        background-color: rgba(129, 129, 129, 0);
+        background-image: linear-gradient(0deg, rgba(129, 129, 129, 0) 0%, rgba(0, 0, 0, 0.69) 10%);
     }
 
     nav ul {
@@ -124,12 +125,13 @@
         border: none;
         border-radius: 5px;
         cursor: pointer;
+        width: 100px;
     }
     
     main {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: calc(100vh - 4rem);
+        height: calc(100vh - 5rem);
     }
 </style>

@@ -5,6 +5,8 @@
     let username = '';
     let password = '';
 
+    let message = '';
+
     async function login() {
         const response = await fetch('http://localhost:8000/api/login/', {
             method: 'POST',
@@ -21,7 +23,7 @@
             user.set(username); // setting the user in the store
             goto('/'); 
         } else {
-            alert('Login failed. Please check your credentials.');
+            message = 'Login failed';
         }
     }
 </script>
@@ -34,7 +36,7 @@
         <label for="username">
             Username:
         </label>
-        <input name="username" type="text" bind:value={username} placeholder="Enter your username" />
+        <input name="username" type="text" bind:value={username} placeholder="Enter your username"/>
     </div>
     <div class="field">
         <label for="password">
@@ -46,6 +48,9 @@
     <p>
         Don't have an account? <a href="/register">Register here</a>
     </p>
+    {#if message}
+        <p class="error">{message}</p>
+    {/if}
 </form>
 
 
