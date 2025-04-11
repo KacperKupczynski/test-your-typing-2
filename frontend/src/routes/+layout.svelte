@@ -1,10 +1,39 @@
 <script>
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { user } from '../stores/user';
     import "../app.css";
 
     let loading = true;
+    let refreshInterval;
+
+    async function refreshAccessToken() {
+        console.log('Refreshing access token...');
+        const refreshToken = localStorage.getItem('refresh_token');
+        if (!refreshToken) {
+            logout();
+            return null;
+        }
+
+        const response = await fetch('http://localhost:8000/api/token/refresh/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ refresh: refreshToken })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('access_token', data.access);
+            console.log ('Access token refreshed');
+            return data.access;
+        } else {
+            logout();
+            goto('/login');
+            return null;
+        }
+    }
 
     onMount(async () => {
         const response = await fetch('http://localhost:8000/api/getUser/', {
@@ -12,7 +41,6 @@
                 Authorization: `Bearer ${localStorage.getItem('access_token')}`
             }
         });
-
         if (response.ok) {
             const data = await response.json();
             user.set(data.username); // setting username in the store
@@ -21,7 +49,15 @@
             goto('/login');
         }
         loading = false;
+
+        refreshInterval = setInterval(() => {
+            refreshAccessToken();
+        }, 4 * 60 * 1000); // Refresh token every 4 minutes
+
     });
+    onDestroy(() => {
+            clearInterval(refreshInterval);
+        });
 
     function logout() {
         localStorage.removeItem('access_token');
@@ -104,7 +140,7 @@
     }
 
     nav p {
-        margin-left: 10rem;;
+        margin-left: 10rem;
         padding: 2rem;
     }
     a {

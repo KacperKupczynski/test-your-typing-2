@@ -48,20 +48,21 @@
 
 <div class="main">
     <h1>Text list</h1>
-    
-    {#if textList.length > 0}
-    {#each textList as text}
-        <ul>
-                <li class="roboto-mono">{text.content}</li>
-                <button on:click={() => deleteText(text.content)}>Delete</button>
-            </ul>
-        {/each}
-    {:else}
-        <p>No texts found</p>
-    {/if}
-    {#if message}
-        <p class="error">{message}</p>
-    {/if}
+    <div class="texts">
+        {#if textList.length > 0}
+        {#each textList as text}
+            <ul>
+                    <li class="roboto-mono">{text.content}</li>
+                    <button on:click={() => deleteText(text.content)}>Delete</button>
+                </ul>
+            {/each}
+        {:else}
+            <p>No texts found</p>
+        {/if}
+        {#if message}
+            <p class="error">{message}</p>
+        {/if}
+    </div>
 </div>
 
 
@@ -79,6 +80,12 @@
 
     h1 {
         text-align: center;
+    }
+
+    .texts {
+        max-height: calc(100vh - 10rem);
+        overflow: auto;
+        width: 100%;
     }
 
     ul {
