@@ -7,18 +7,28 @@ __pycache__/
 db.sqlite3
 media
 
+# Environment variables
 *.env
 
-*/migrations/*
+# Ignore temporary migration files
+*/migrations/__pycache__/
+*/migrations/*.pyc
 
+# Static files
 staticfiles/
+static/
 
-/static/
-
+# Cache files
 *.cache
 
+# Virtual environment
 venv/
 .env/
 
+# IDE-specific files
 .vscode/
 .idea/
+
+# Ignore unnecessary files
+.DS_Store
+Thumbs.db
