@@ -49,7 +49,7 @@
 <div class="main">
     <h1>Text list</h1>
     <div class="texts">
-        {#if textList.length > 0}
+        <!-- {#if textList.length > 0}
         {#each textList as text}
             <ul>
                     <li class="roboto-mono">{text.content}</li>
@@ -61,7 +61,23 @@
         {/if}
         {#if message}
             <p class="error">{message}</p>
-        {/if}
+        {/if} -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Text</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#each textList as text}
+                    <tr>
+                        <td>{text.content}</td>
+                        <td><button on:click={() => deleteText(text.content)}>Delete</button></td>
+                    </tr>
+                {/each}
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -85,30 +101,30 @@
     .texts {
         max-height: calc(100vh - 10rem);
         overflow: auto;
+        padding: 3rem;
+    }
+
+    table {
         width: 100%;
-    }
-
-    ul {
-        list-style-type: none;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap:16px;
-    }
-
-    li {
-        margin: 10px 0;
-        font-family: 'Roboto Mono', monospace;
-        font-size: 16px;
-        max-width: 50vw;
-        padding: 10px;
-        border-radius: 8px;
+        border-collapse: collapse;
         background: rgba(255, 255, 255, 0.05);
         color: white;
-        border: 1px solid white;
     }
 
+    th, td {
+        border: 1px solid #f1f1f1;
+        padding: 8px;
+    }
+
+    th {
+        background-color: rgba(255, 255, 255, 0.1);
+        font-weight: bold;
+    }
+
+    td {
+        word-wrap: break-word;
+        max-width: 800px;
+    }
     button {
         background-color: #ff4d4d;
         color: white;

@@ -4,7 +4,7 @@
     </h1>
     
     <p>
-        This is a typing test application. You can add your own text, take the test, and see your results in the history section. You can also see the list of texts you have added.
+        Add your own text, take the test, and see your results in the history section. You can also see the list of texts you have added.
     </p>
 
     <a href="/type-test" class="start-button">
@@ -36,5 +36,8 @@
         color: white;
         text-decoration: none;
         border-radius: 5px;
+    }
+    a:hover {
+        background-color: #45a049;
     }
 </style>

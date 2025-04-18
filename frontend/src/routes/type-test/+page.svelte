@@ -14,6 +14,7 @@
     let finalWpm = 0;
     let finalTime = 0;
     let showResults = false;
+    let isText = true;
 
     onMount(async () => {
         fetchText();
@@ -46,6 +47,7 @@
             }));
         } else {
             message = "Failed to fetch text.";
+            isText = false;
         }
     }
 
@@ -145,7 +147,7 @@
 </script>
 
 <div class="test">
-{#if !showResults}
+{#if !showResults && isText}
     <div class="displayer roboto-mono">
         {#each letterStates as { letter, state }, i}
             {#if letter === ' '}
@@ -163,6 +165,10 @@
         <p>WPM: {wpm.toFixed(2)}</p>
         <p>Time: {time.toFixed(2)}</p>
     </div>
+{/if} 
+{#if !isText}
+    <p>There's nothing to type. Add a text here:</p>
+    <a href="/add-text">Add text</a>
 {/if}
 
     {#if showResults}
@@ -177,13 +183,21 @@
     {#if !showResults && input.length > 0}
         <button onclick={stop}>Stop</button>
     {/if}
-    {#if !isStarted && input.length === 0}
+    {#if !isStarted && input.length === 0 && isText}
         <button onclick={fetchText}>Get new text</button>
     {/if}
 
 </div>
 
 <style>
+    a
+    {
+        color: #4CAF50;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
 
     .test {
         font-size: 18px;
