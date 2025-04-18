@@ -76,7 +76,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://test-your-typing-2.vercel.app/'
+    'https://test-your-typing-2.vercel.app'
 ]
 ROOT_URLCONF = 'backend.urls'
 
