@@ -1,6 +1,8 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { user } from '../../stores/user';
+    import { API_URL } from '$lib/index';
+
 
     let username = '';
     let password = '';
@@ -8,7 +10,7 @@
     let message = '';
 
     async function login() {
-        const response = await fetch('http://localhost:8000/api/login/', {
+        const response = await fetch(`${API_URL}/api/login/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -2,6 +2,8 @@
     import { onMount } from "svelte";
 	import { user } from "../../stores/user";
     import { fade } from "svelte/transition";
+    import { API_URL } from '$lib/index';
+
 
     let text = "";
     let letterStates: { letter: string; state: string }[] = [];
@@ -32,7 +34,7 @@
     // Function to fetch random text from the API
     // This function is called on mounting site (component)
     async function fetchText() {
-        const response = await fetch('http://localhost:8000/api/randomText', {
+        const response = await fetch(`${API_URL}/api/randomText`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('access_token')}`
             }
@@ -117,7 +119,7 @@
         clearInterval(interval);
         isStarted = false;
         if (checkCorrectness()) {
-            const response = await fetch('http://localhost:8000/api/saveResult/', {
+            const response = await fetch(`${API_URL}/api/saveResult/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

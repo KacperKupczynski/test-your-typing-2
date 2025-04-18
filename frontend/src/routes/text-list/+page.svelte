@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import { API_URL } from '$lib/index';
 
     let textList: { content: string }[] = [];
     onMount(getTextList);
@@ -9,7 +10,7 @@
     // Function to fetch text list from the API
     // This function is called on mounting site (component)
     async function getTextList() {
-        const response = await fetch('http://localhost:8000/api/textList/', {
+        const response = await fetch(`${API_URL}/api/textList/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -29,7 +30,7 @@
     // This function is called when the delete button is clicked
     // It sends a DELETE request to the API with the text content to be deleted
     async function deleteText(content: string) {
-        const response = await fetch('http://localhost:8000/api/deleteText/', {
+        const response = await fetch(`${API_URL}/api/deleteText/`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

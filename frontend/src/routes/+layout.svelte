@@ -3,6 +3,7 @@
     import { goto } from '$app/navigation';
     import { user } from '../stores/user';
     import "../app.css";
+    import { API_URL } from '$lib';
 
     let loading = true;
     let refreshInterval;
@@ -15,7 +16,7 @@
             return null;
         }
 
-        const response = await fetch('http://localhost:8000/api/token/refresh/', {
+        const response = await fetch(`${API_URL}/api/token/refresh/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -36,7 +37,7 @@
     }
 
     onMount(async () => {
-        const response = await fetch('http://localhost:8000/api/getUser/', {
+        const response = await fetch(`${API_URL}/api/getUser/`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('access_token')}`
             }

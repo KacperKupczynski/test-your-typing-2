@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+    import { API_URL } from '$lib/index';
+
 
     let results: { text: string; wpm: number; time: number, created_at: Date }[] = [];
 
@@ -10,7 +12,7 @@
 
     // Function to fetch results from the API
     async function getResults() {
-        const response = await fetch('http://localhost:8000/api/getResults/', {
+        const response = await fetch(`${API_URL}/api/getResults/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

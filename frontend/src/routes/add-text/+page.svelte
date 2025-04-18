@@ -1,11 +1,12 @@
 <script lang="ts">
     let content = '';
     let message = '';
+    import { API_URL } from '$lib/index';
 
     // Function to add text to the database
     // This function is called when the form is submitted
     async function addText() {
-        const response = await fetch('http://localhost:8000/api/addText/', {
+        const response = await fetch(`${API_URL}/api/addText/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

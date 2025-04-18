@@ -1,11 +1,13 @@
 <script>
     import { goto } from '$app/navigation';
+    import { API_URL } from '$lib/index';
+
 
     let username = '';
     let password = '';
 
     async function register() {
-        const response = await fetch('http://localhost:8000/api/register/', {
+        const response = await fetch(`${API_URL}/api/register/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
