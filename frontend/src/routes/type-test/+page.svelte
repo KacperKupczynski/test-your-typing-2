@@ -116,32 +116,33 @@
 
     // Function to stop the test and save the result
     async function stop() {
-        clearInterval(interval);
-        isStarted = false;
-        if (checkCorrectness()) {
-            const response = await fetch(`${API_URL}/api/saveResult/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('access_token')}`
-                },
-                body: JSON.stringify({
-                    text,
-                    wpm,
-                    time
-                })
-            });
-            
-            if (response.ok) {
-                showResults = true;
-            } else {
-                message = "Failed to save result.";
-            }
+    clearInterval(interval);
+    isStarted = false;
+
+    if (checkCorrectness()) {
+        const response = await fetch(`${API_URL}/api/saveResult/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`, // Retrieve token dynamically
+            },
+            body: JSON.stringify({
+                text,
+                wpm,
+                time,
+            }),
+        });
+
+        if (response.ok) {
+            showResults = true;
         } else {
-            reset();
-            message = "Test failed. Please try again.";
+            message = "Failed to save result.";
         }
+    } else {
+        reset();
+        message = "Test failed. Please try again.";
     }
+}
     function playAgain() {
         showResults = false;
         reset();
