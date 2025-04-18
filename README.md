@@ -1,6 +1,6 @@
 # Test Your Typing
 
-Link to the project: [https://test-your-typing-2.vercel.app/](https://test-your-typing.vercel.app/)
+[Link to the app](https://test-your-typing-2.vercel.app/)
 
 My school project to test your typing speed and accuracy. It is a simple web application that allows users to practice typing and track their performance. 
 It is built using SvelteKit to frontend and Django to backend.
