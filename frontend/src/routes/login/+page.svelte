@@ -3,10 +3,8 @@
     import { user } from '../../stores/user';
     import { API_URL } from '$lib/index';
 
-
     let username = '';
     let password = '';
-
     let message = '';
 
     async function login() {
@@ -22,8 +20,21 @@
             const data = await response.json();
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
-            user.set(username); // setting the user in the store
-            goto('/'); 
+
+            // Fetch the user details and update the store
+            const userResponse = await fetch(`${API_URL}/api/getUser/`, {
+                headers: {
+                    Authorization: `Bearer ${data.access}`
+                }
+            });
+
+            if (userResponse.ok) {
+                const userData = await userResponse.json();
+                user.set(userData.username); // Update the user store
+            }
+
+            //go to the main page
+            goto('/');
         } else {
             message = 'Login failed';
         }
