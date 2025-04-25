@@ -19,7 +19,13 @@
     let isText = true;
 
     onMount(async () => {
-        fetchText();
+        // Check if the user is logged in
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            window.location.href = '/login';
+        } else {
+            await fetchText();
+        }
     });
 
 

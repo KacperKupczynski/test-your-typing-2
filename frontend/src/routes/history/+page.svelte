@@ -6,8 +6,14 @@
     let results: { text: string; wpm: number; time: number, created_at: Date }[] = [];
 
     // Fetch results when the component mounts
-    onMount(getResults);
-
+    onMount(async () => {
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            window.location.href = '/login';
+        } else {
+            await getResults();
+        }
+    });
     let message = '';
 
     // Function to fetch results from the API

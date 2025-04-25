@@ -3,8 +3,15 @@
     import { API_URL } from '$lib/index';
 
     let textList: { content: string }[] = [];
-    onMount(getTextList);
 
+    onMount(async () => {
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            window.location.href = '/login';
+        } else {
+            await getTextList();
+        }
+    });
     let message = '';
 
     // Function to fetch text list from the API

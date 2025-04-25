@@ -32,7 +32,7 @@
                 user.set(userData.username); // Update the user store
             }
             // Go to the main page
-            goto('/');
+            window.location.href = '/';
         } else {
             alert('Registration failed');
         }

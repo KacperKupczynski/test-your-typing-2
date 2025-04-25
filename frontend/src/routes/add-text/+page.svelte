@@ -2,6 +2,15 @@
     let content = '';
     let message = '';
     import { API_URL } from '$lib/index';
+	import { onMount } from 'svelte';
+
+    onMount(() => {
+        // Check if the user is logged in
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            window.location.href = '/login';
+        }
+    });
 
     // Function to add text to the database
     // This function is called when the form is submitted

@@ -71,40 +71,35 @@
 {#if loading}
     <div class="loading">Loading...</div>
 {:else}
-
-
-<nav>
-    <a href="/">
-        <img src="./logo.png" alt="logo" class="logo" />
-    </a>
-    <ul>
-        <li>
-            <a href="/type-test">Start typing</a>
-        </li>
-        <li>
-            <a href="/history">History</a>
-        </li>
-        <li>
-            <a href="/add-text">Add your text</a>
-        </li>
-        <li>
-            <a href="/text-list">List of your texts</a>
-        </li>
-    </ul>
-    <div class="user-info">
-        {#if $user}
+    {#if $user}
+    <nav>
+        <a href="/">
+            <img src="./logo.png" alt="logo" class="logo" />
+        </a>
+        <ul>
+            <li>
+                <a href="/type-test">Start typing</a>
+            </li>
+            <li>
+                <a href="/history">History</a>
+            </li>
+            <li>
+                <a href="/add-text">Add your text</a>
+            </li>
+            <li>
+                <a href="/text-list">List of your texts</a>
+            </li>
+        </ul>
+        <div class="user-info">
             <p>{$user}</p>
             <button on:click={logout}>Logout</button>
-        {:else}
-            <a href="/login">Login</a>
-        {/if}
-    </div>
-</nav>
-
-<main>
-    <slot></slot>
-</main>
-
+        </div>
+    </nav>
+    {/if}
+        
+    <main>
+        <slot></slot>
+    </main>
 {/if}
 <style>
     nav {

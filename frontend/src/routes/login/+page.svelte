@@ -6,42 +6,71 @@
     let username = '';
     let password = '';
     let message = '';
+    let loading = false;
 
     async function login() {
-        const response = await fetch(`${API_URL}/api/login/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        });
+        // Clear previous error messages
+        message = '';
+        loading = true;
 
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem('access_token', data.access);
-            localStorage.setItem('refresh_token', data.refresh);
+        // Validate inputs
+        if (!username.trim()) {
+            message = 'Username is required';
+            loading = false;
+            return;
+        }
 
-            // Fetch the user details and update the store
-            const userResponse = await fetch(`${API_URL}/api/getUser/`, {
+        if (!password.trim()) {
+            message = 'Password is required';
+            loading = false;
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/api/login/`, {
+                method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${data.access}`
-                }
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
             });
 
-            if (userResponse.ok) {
-                const userData = await userResponse.json();
-                user.set(userData.username); // Update the user store
-            }
+            const data = await response.json();
 
-            //go to the main page
-            goto('/');
-        } else {
-            message = 'Login failed';
+            if (response.ok) {
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+
+                // Fetch the user details and update the store
+                const userResponse = await fetch(`${API_URL}/api/getUser/`, {
+                    headers: {
+                        Authorization: `Bearer ${data.access}`
+                    }
+                });
+
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    user.set(userData.username); // Update the user store
+                    window.location.href = '/'; // Use window.location for full page reload
+                }
+            } else {
+                // Handle specific error cases
+                if (response.status === 400) {
+                    message = data.error || 'Please provide both username and password';
+                } else if (response.status === 401) {
+                    message = 'Invalid username or password';
+                } else {
+                    message = 'Login failed. Please try again.';
+                }
+            }
+        } catch (error) {
+            message = 'Network error. Please try again.';
+            console.error('Login error:', error);
+        } finally {
+            loading = false;
         }
     }
 </script>
-
-
 
 <form on:submit|preventDefault={login}>
     <h1>Login</h1>
@@ -49,26 +78,42 @@
         <label for="username">
             Username:
         </label>
-        <input name="username" type="text" bind:value={username} placeholder="Enter your username"/>
+        <input 
+            name="username" 
+            type="text" 
+            bind:value={username} 
+            placeholder="Enter your username"
+            disabled={loading}
+            autofocus
+        />
     </div>
     <div class="field">
         <label for="password">
             Password:
         </label>
-        <input type="password" bind:value={password} placeholder="Enter your password" />
+        <input 
+            type="password" 
+            bind:value={password} 
+            placeholder="Enter your password"
+            disabled={loading} 
+        />
     </div>
-    <button type="submit">Login</button>
+    
+    {#if message}
+        <div class="error-message">
+            {message}
+        </div>
+    {/if}
+    
+    <button type="submit" disabled={loading}>
+        {loading ? 'Logging in...' : 'Login'}
+    </button>
     <p>
         Don't have an account? <a href="/register">Register here</a>
     </p>
-    {#if message}
-        <p class="error">{message}</p>
-    {/if}
 </form>
 
-
 <style>
-
     h1 {
         text-align: center;
     }
@@ -81,7 +126,6 @@
         background: rgba(255, 255, 255, 0.05);
         padding: 2rem;
         align-items: center;
-        
     }
 
     a {
@@ -108,15 +152,20 @@
         border-radius: 8px;
         font-size: 16px;
     }
-
-    button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 14px 20px;
-        margin: 8px 0;
-        border: none;
-        border-radius: 16px;
-        cursor: pointer;
-        width: 30%;
+    
+    .error-message {
+        color: #ff5555;
+        background-color: rgba(255, 85, 85, 0.1);
+        border: 1px solid #ff5555;
+        padding: 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        width: 100%;
+        text-align: center;
+    }
+    
+    button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
     }
 </style>

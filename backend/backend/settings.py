@@ -26,9 +26,9 @@ import os
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-default-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['test-your-typing-2-backend.onrender.com']
+ALLOWED_HOSTS = ['test-your-typing-2-backend.onrender.com', 'localhost', '127.0.0.1']
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
