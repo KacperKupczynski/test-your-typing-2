@@ -1,5 +1,4 @@
 <script>
-    import { goto } from '$app/navigation';
     import { user } from '../../stores/user';
     import { API_URL } from '$lib/index';
 

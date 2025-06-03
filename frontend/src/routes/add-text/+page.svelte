@@ -15,6 +15,10 @@
     // Function to add text to the database
     // This function is called when the form is submitted
     async function addText() {
+        if (!content.trim()) {
+            message = "Text cannot be empty";
+            return;
+        }
         const response = await fetch(`${API_URL}/api/addText/`, {
             method: 'POST',
             headers: {
@@ -38,7 +42,7 @@
 
     <form on:submit|preventDefault={addText}>
         <label for="text">Enter a text:</label>
-        <textarea name="text" bind:value={content} placeholder="Enter your text"></textarea>
+        <textarea name="text" bind:value={content} placeholder="Enter your text" required></textarea>
         <button type="submit">Add text</button>
     </form>
     {#if message}
