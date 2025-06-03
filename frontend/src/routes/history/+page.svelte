@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+    import { onMount } from "svelte";
     import { API_URL } from '$lib/index';
 
-
-    let results: { text: string; wpm: number; time: number, created_at: Date }[] = [];
+    // Update the interface to include accuracy
+    let results: { text: string; wpm: number; time: number; accuracy: number; created_at: Date }[] = [];
 
     // Fetch results when the component mounts
     onMount(async () => {
@@ -28,12 +28,12 @@
 
         if (response.ok) {
             const data = await response.json();
-            results = data.results.map((result: { text: string; wpm: number; time: number, created_at: Date }) => ({
+            results = data.results.map((result: { text: string; wpm: number; time: number; accuracy: number; created_at: Date }) => ({
                 text: result.text,
                 wpm: result.wpm,
                 time: result.time,
+                accuracy: result.accuracy || 0, // Provide a default of 0 for older records
                 created_at: new Date(result.created_at).toLocaleString()
-
             }));
         } else {
             message = 'Failed to get results';
@@ -68,6 +68,7 @@
                             <th>Text</th>
                             <th>WPM</th>
                             <th>Time</th>
+                            <th>Accuracy</th>
                             <th>Taken</th>
                         </tr>
                     </thead>
@@ -77,6 +78,7 @@
                                 <td class="roboto-mono">{result.text}</td>
                                 <td>{result.wpm}</td>
                                 <td>{result.time.toFixed(2)} seconds</td>
+                                <td>{result.accuracy ? result.accuracy.toFixed(2) : 'N/A'}%</td>
                                 <td>{result.created_at}</td>
                             </tr>
                         {/each}
@@ -84,17 +86,19 @@
                 </table>
             </div>
             <!-- container for statistics -->
-                <div class="stats">
+            <div class="stats">
                 <p>Total results: {results.length}</p>
                 <p>Average WPM: {Math.round(results.reduce((acc, result) => acc + result.wpm, 0) / results.length)}</p>
                 <p>Average time: {Math.round(results.reduce((acc, result) => acc + result.time, 0) / results.length)} seconds</p>
+                <p>Average accuracy: {(results.reduce((acc, result) => acc + (result.accuracy || 0), 0) / results.length).toFixed(2)}%</p>
                 <p>Best WPM: {results.reduce((acc, result) => Math.max(acc, result.wpm), 0)}</p>
                 <p>Best time: {results.reduce((acc, result) => Math.min(acc, result.time), Infinity).toFixed(2)} seconds</p>
+                <p>Best accuracy: {results.reduce((acc, result) => Math.max(acc, result.accuracy || 0), 0).toFixed(2)}%</p>
                 <p>Worst WPM: {results.reduce((acc, result) => Math.min(acc, result.wpm), Infinity)}</p>
                 <p>Worst time: {results.reduce((acc, result) => Math.max(acc, result.time), 0).toFixed(2)} seconds</p>
-                <p>Words typed: {results.reduce((acc, result) => acc + result.text.split(' ').length, 0)} </p>
-                <p>Characters typed: {results.reduce((acc, result) => acc + result.text.length, 0)} </p>
-
+                <p>Worst accuracy: {(results.length > 0 ? results.reduce((acc, result) => Math.min(acc, result.accuracy || 100), 100) : 0).toFixed(2)}%</p>
+                <p>Words typed: {results.reduce((acc, result) => acc + result.text.split(' ').length, 0)}</p>
+                <p>Characters typed: {results.reduce((acc, result) => acc + result.text.length, 0)}</p>
             </div>
         </div>
         {:else}

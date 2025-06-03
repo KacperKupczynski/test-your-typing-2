@@ -99,7 +99,6 @@ class UpdateTextView(APIView):
         text.save()
         return Response({'content': text.content}, status=status.HTTP_200_OK)
     
-#saving result of a test
 class SaveResultView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -107,16 +106,52 @@ class SaveResultView(APIView):
         text_content = request.data.get('text')
         wpm = request.data.get('wpm')
         time = request.data.get('time')
+        accuracy = request.data.get('accuracy')
         user = request.user.username
 
+        # Validate required fields
+        if not text_content:
+            return Response({'error': 'Text content is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if wpm is None:  # Use is None to allow 0 as valid value
+            return Response({'error': 'WPM is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if time is None:
+            return Response({'error': 'Time is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if accuracy is None:
+            return Response({'error': 'Accuracy is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validate data types and convert
+        try:
+            wpm = float(wpm)
+            time = float(time)
+            accuracy = float(accuracy)
+        except (ValueError, TypeError):
+            return Response({'error': 'WPM, time, and accuracy must be numeric values'}, status=status.HTTP_400_BAD_REQUEST)
+        
         try:
             text = Text.objects.get(content=text_content)
-            result = WpmResult(text=text, wpm=wpm, time=time, user=user)
+            result = WpmResult(
+                text=text,
+                wpm=wpm,
+                time=time,
+                accuracy=accuracy,
+                user=user
+            )
             result.save()
-            return Response({'message': 'Result saved successfully'}, status=status.HTTP_201_CREATED)
+            return Response({
+                'message': 'Result saved successfully',
+                'result': {
+                    'wpm': wpm,
+                    'time': time,
+                    'accuracy': accuracy
+                }
+            }, status=status.HTTP_201_CREATED)
         except Text.DoesNotExist:
-            return Response({'error': 'Text not found'}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response({'error': 'Text not found in database'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': f'Failed to save result: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  
 #retrieving results of a test
 class GetResultsView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -124,9 +159,18 @@ class GetResultsView(APIView):
     def get(self, request):
         user = request.user.username
         results = WpmResult.objects.filter(user=user).order_by('-created_at')
-        serialized_results = [{'text': result.text.content, 'wpm': result.wpm, 'time': result.time, 'created_at': result.created_at} for result in results]
+        serialized_results = [
+            {
+                'text': result.text.content, 
+                'wpm': result.wpm, 
+                'time': result.time, 
+                'accuracy': result.accuracy,  # Include accuracy
+                'created_at': result.created_at
+            } 
+            for result in results
+        ]
         return Response({'results': serialized_results}, status=status.HTTP_200_OK)
-
+    
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user(request):

@@ -1,9 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
-	import { user } from "../../stores/user";
+    import { user } from "../../stores/user";
     import { fade } from "svelte/transition";
     import { API_URL } from '$lib/index';
-
 
     let text = "";
     let letterStates: { letter: string; state: string }[] = [];
@@ -15,6 +14,7 @@
     let message = "";
     let finalWpm = 0;
     let finalTime = 0;
+    let finalAccuracy = 0;
     let showResults = false;
     let isText = true;
 
@@ -28,9 +28,7 @@
         }
     });
 
-
     // Enter key event listener for play again button
-    // This will allow the user to press enter to play again after the test is finished
     window.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && showResults) {
             playAgain();
@@ -38,7 +36,6 @@
     });
 
     // Function to fetch random text from the API
-    // This function is called on mounting site (component)
     async function fetchText() {
         const response = await fetch(`${API_URL}/api/randomText`, {
             headers: {
@@ -65,7 +62,7 @@
     }
 
     //ends test when user types all letters
-    $: if (input.length === text.length && isStarted) {
+    $: if (input.length >= text.length && isStarted) {
         stop();
     }
 
@@ -92,20 +89,19 @@
     }
 
     // Function to calculate WPM based on the input and time
-    // WPM is calculated as (number of characters / 5) / (time in minutes)
     function calcWPM() {
         const chars = input.length;
         const words = chars / 5;
         wpm = words / (time / 60);
     }
 
-    // Function to check if the test is correct
-    function checkCorrectness() {
-        return letterStates.every(letterState => letterState.state === 'correct');
+    function calculateAccuracy() {
+        const correctChars = letterStates.filter(ls => ls.state === 'correct').length;
+        const totalChars = letterStates.length;
+        return (correctChars / totalChars) * 100;
     }
-
+    
     // Function to reset the test
-    // This function is called when the user clicks the play again button
     function reset() {
         fetchText();
         input = '';
@@ -122,33 +118,48 @@
 
     // Function to stop the test and save the result
     async function stop() {
-    clearInterval(interval);
-    isStarted = false;
+        clearInterval(interval);
+        isStarted = false;
 
-    if (checkCorrectness()) {
-        const response = await fetch(`${API_URL}/api/saveResult/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('access_token')}`, // Retrieve token dynamically
-            },
-            body: JSON.stringify({
-                text,
-                wpm,
-                time,
-            }),
-        });
+        // Trim input to match text length to handle extra characters
+        input = input.substring(0, text.length);
+        
+        // Update letter states one final time
+        checkInput();
+        
+        const accuracy = calculateAccuracy();
+        finalWpm = wpm;
+        finalTime = time;
+        finalAccuracy = accuracy;
 
-        if (response.ok) {
-            showResults = true;
-        } else {
-            message = "Failed to save result.";
+        try {
+            const response = await fetch(`${API_URL}/api/saveResult/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+                },
+                body: JSON.stringify({
+                    text,
+                    wpm,
+                    time,
+                    accuracy: parseFloat(accuracy.toFixed(2)),
+                }),
+            });
+
+            if (response.ok) {
+                showResults = true;
+            } else {
+                const data = await response.json();
+                message = data.error || "Failed to save result";
+                console.error('Error saving result:', data);
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            message = "Network error. Please try again.";
         }
-    } else {
-        reset();
-        message = "Test failed. Please try again.";
     }
-}
+    
     function playAgain() {
         showResults = false;
         reset();
@@ -167,7 +178,7 @@
         {/each}
     </div>
     <div class="type-box">
-        <input type="text" name="" id="" bind:value={input} oninput={checkInput} placeholder="Type text above" autofocus/>
+        <input type="text" bind:value={input} on:input={checkInput} placeholder="Type text above" autofocus/>
         {#if message}
             <p class="incorrect error">{message}</p>
         {/if}
@@ -183,24 +194,23 @@
     {#if showResults}
         <div class="results" transition:fade={{ duration: 300 }}>
             <h2>Results</h2>
-            <p>WPM: {wpm.toFixed(2)}</p>
-            <p>Time: {time.toFixed(2)} seconds</p>
-            <button onclick={playAgain}>Play again</button>
+            <p>WPM: {finalWpm.toFixed(2)}</p>
+            <p>Time: {finalTime.toFixed(2)} seconds</p>
+            <p>Accuracy: {finalAccuracy.toFixed(2)}%</p>
+            <button on:click={playAgain}>Play again</button>
         </div>
     {/if}
 
     {#if !showResults && input.length > 0}
-        <button onclick={stop}>Stop</button>
+        <button on:click={stop}>Stop</button>
     {/if}
     {#if !isStarted && input.length === 0 && isText}
-        <button onclick={fetchText}>Get new text</button>
+        <button on:click={fetchText}>Get new text</button>
     {/if}
-
 </div>
 
 <style>
-    a
-    {
+    a {
         color: #4CAF50;
         text-decoration: none;
     }
@@ -264,5 +274,10 @@
 
     .space {
         width: 0.5rem;
+    }
+    
+    .error {
+        margin: 10px 0;
+        color: #ff5555;
     }
 </style>
